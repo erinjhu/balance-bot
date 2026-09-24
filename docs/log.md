@@ -5,6 +5,13 @@
 ## Sept 23, 2026
 
 - Set up ROS2 jazzy
+- Program and test observability node; publish the CPU and memory usage
+- Program and test video node
+    - Camera issues
+        - Set up usbipd to connect WSL to the Windows camera
+        - Not working; most likely because it doesn't have the uvcvideo driver
+        - For other robot projects will run on the actual device (e.g. Raspberry Pi or Jetson) which has Linux instead of WSL from main laptop
+    - Decided to use mock video for now
 
 ## Sept 22, 2026
 

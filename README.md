@@ -32,8 +32,21 @@ source .venv/bin/activate
 pip install mujoco
 ```
 
-Run in each terminal session
+Run in each new terminal session, not in a venv
 
 ```
 source /opt/ros/jazzy/setup.bash
+```
+
+Open multiple terminals
+
+Start the observability node
+```
+cd src/edge_robot
+python3 observability_node.py
+```
+
+Listen to the observability node
+```
+
 ```
