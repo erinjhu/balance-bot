@@ -31,3 +31,9 @@ source .venv/bin/activate
 ```
 pip install mujoco
 ```
+
+Run in each terminal session
+
+```
+source /opt/ros/jazzy/setup.bash
+```

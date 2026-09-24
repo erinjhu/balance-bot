@@ -2,6 +2,10 @@
 
 - Implement Kalman filter
 
+## Sept 23, 2026
+
+- Set up ROS2 jazzy
+
 ## Sept 22, 2026
 
 - Set up mujoco
