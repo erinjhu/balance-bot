@@ -28,41 +28,44 @@ python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-```
-pip install mujoco
-```
 
-Run in each new terminal session, not in a venv
+## Run the observability (usage) and video nodes
 
-```
-source /opt/ros/jazzy/setup.bash
-```
-
-Open multiple terminals
-
-Start the observability node
 ```
 cd src/edge_robot
+```
+```
 python3 observability_node.py
 ```
-
-Listen to the observability node
+```
+python3 video_node.py
 ```
 
+## Joint movements 
+
+### Setup
+
 ```
-
-
-## Set up joint movements
-
-Terminal 1 (WSL):
+sudo apt install ros-jazzy-robot-state-publisher -y
+```
 
 ```
 sudo apt install ros-jazzy-foxglove-bridge -y
 ```
 
+### Run the telemetry node
+
+In each new terminal:
+
+```
+cd src/edge_robot
+```
+
 ```
 source /opt/ros/jazzy/setup.bash
 ```
+
+Terminal 1 (WSL):
 
 ```
 ros2 run foxglove_bridge foxglove_bridge
@@ -71,20 +74,27 @@ ros2 run foxglove_bridge foxglove_bridge
 Terminal 2 (WSL):
 
 ```
-cd src/edge_robot
+ros2 run robot_state_publisher robot_state_publisher robot.urdf
 ```
 
-```
-source /opt/ros/jazzy/setup.bash
-```
+Terminal 3 (WSL):
 
 ```
 python3 telemetry_node.py
 ```
 
-Web browser:
+### Foxglove Visualization
 
-app.foxglove.dev
-Open connection > Foxglove WebSocket
-ws://localhost:8765 > Open
-Add Panel > Plot > Series > Y value > /joint_states > position[0]
+Setup:
+
+1. Go to app.foxglove.dev
+2. Open connection > Foxglove WebSocket
+3. ws://localhost:8765 > Open
+
+Panels:
+
+- **Graph of motor positions**: Add Panel > Plot > Series > Y value > /joint_states > position[0]
+- **3D robotic arm:** Add Panel > 3D 
+  - Frame: base_link
+  - Topics: /robot_description 
+- **CPU and memory usage:** Add Panel > Raw Messages > /system_metrics.data
