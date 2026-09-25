@@ -50,3 +50,41 @@ Listen to the observability node
 ```
 
 ```
+
+
+## Set up joint movements
+
+Terminal 1 (WSL):
+
+```
+sudo apt install ros-jazzy-foxglove-bridge -y
+```
+
+```
+source /opt/ros/jazzy/setup.bash
+```
+
+```
+ros2 run foxglove_bridge foxglove_bridge
+```
+
+Terminal 2 (WSL):
+
+```
+cd src/edge_robot
+```
+
+```
+source /opt/ros/jazzy/setup.bash
+```
+
+```
+python3 telemetry_node.py
+```
+
+Web browser:
+
+app.foxglove.dev
+Open connection > Foxglove WebSocket
+ws://localhost:8765 > Open
+Add Panel > Plot > Series > Y value > /joint_states > position[0]

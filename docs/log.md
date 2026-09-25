@@ -2,6 +2,12 @@
 
 - Implement Kalman filter
 
+## Sept 24, 2026
+
+- Program and test telemetry node
+    - Publish 6 values for the motor position using sine
+- Set up Foxglove
+
 ## Sept 23, 2026
 
 - Set up ROS2 jazzy
