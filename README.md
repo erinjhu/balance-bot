@@ -98,3 +98,21 @@ Panels:
   - Frame: base_link
   - Topics: /robot_description 
 - **CPU and memory usage:** Add Panel > Raw Messages > /system_metrics.data
+
+
+## Test PID Node
+
+Terminal 1:
+```
+python3 pid_node.py
+```
+
+Terminal 2:
+```
+ros2 topic echo /motor/pwm
+```
+
+Terminal 3:
+```
+ros2 topic pub -1 /robot/state/pitch std_msgs/msg/Float32 "{data: 5.0}"
+```

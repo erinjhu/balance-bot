@@ -2,6 +2,38 @@
 
 - Implement Kalman filter
 
+## Sept 30, 2026
+
+- PID
+  - Was going to use abs() for the error, but then realized that you need the negative sign for the direction that the motor will move in
+  - Me forgetting how to do Python and PID 
+  ```
+  import rclpy
+    from rclpy.node import Node
+
+    class PIDNode(Node):
+        def __init__(self):
+            super().__init__('pid_node')
+            total_error = 0
+            error = 0
+            self.kp = 0
+            self.ki = 1
+            kp = 1
+
+        def prop_output(self, target_pitch, current_pitch, kp):
+            self.error = target_pitch - current_pitch
+            return kp * self.error
+
+        # if there is still error after using Kp, Ki will turn the motor until there is no error
+
+        def integral_output(self, total_error, dt, ki):
+            output = self.total_error + self.error
+            return output
+
+        def total_output(self):
+            return self.prop_output(self.kp) + self.integral_output(self.total_error, 1, self.ki)   
+    ```
+
 ## Sept 24, 2026
 
 - Program and test telemetry node
