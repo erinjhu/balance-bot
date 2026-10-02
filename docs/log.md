@@ -1,6 +1,10 @@
 ## Next session
 
-- Implement Kalman filter
+
+## Oct 1, 2026
+
+- Kalman filter
+  1. Predict the next angle using the current rotation speed. Also account for the bias
 
 ## Sept 30, 2026
 

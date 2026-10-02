@@ -3,7 +3,9 @@ from rclpy.node import Node
 from std_msgs.msg import Float32, Int16MultiArray
 
 class PIDNode(Node):
+
     def __init__(self):
+        
         super().__init__('pid_node')
 
         self.kp = 1.0
