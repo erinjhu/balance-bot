@@ -2,3 +2,6 @@
 log
 build
 install
+rosbag2_*/
+__pycache__/
+*.pyc

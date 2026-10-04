@@ -6,7 +6,7 @@ Self-rising robot with 2 degrees of freedom.
 
 - [MuJoCo](https://mujoco.org/): physics simulation for robot
 - Python
-- ROS2
+- ROS 2
 
 ### Architecture
 
@@ -57,20 +57,24 @@ Because of the --symlink-install flag from the initial setup, you don't need to 
 colcon build
 ```
 
-#### Running nodes
+#### Running the robot
 
-Terminal 1:
+Starting the nodes:
 
 ```
 ros2 launch edge_robot bringup.launch.py
 ```
 
-Terminal 2:
-
-This script will record the data published by each node into log files. 
+Recording topic data in ROS bags (new terminal):
 
 ```
-./record_topics.sh
+ros2 bag record --topics /imu/data_raw /robot/state/pitch /motor/pwm
+```
+
+Replaying ROS bag data:
+
+```
+ros2 bag play robot_test_bag
 ```
 
 ### Foxglove Visualization

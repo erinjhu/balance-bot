@@ -12,9 +12,10 @@
     - Data published by mock IMU node - angular velocity and acceleration
     - Data published by state estimator node - pitch
     - Data published by PID node - PWM values
-- Make ROS2 package and restructure folders
+- Make ROS 2 package and restructure folders
     - Automatically start nodes
     - Bash script that will record the data published by each node into files
+- Set up 
 
 ## Oct 3, 2026
 

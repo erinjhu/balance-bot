@@ -3,14 +3,14 @@ import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Float32, Int16MultiArray
 from sensor_msgs.msg import Imu 
-import kalman_filter
+from edge_robot.kalman_filter import KalmanFilter
 
 class StateEstimatorNode(Node):
 
     def __init__(self):
 
         super().__init__('state_estimator_node')
-        self.kf = kalman_filter.KalmanFilter()
+        self.kf = KalmanFilter()
         self.last_time = 0.0
 
         self.imu_subscriber = self.create_subscription(
