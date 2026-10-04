@@ -39,14 +39,14 @@ class KalmanFilter():
   
         self.r_measure = 0.03   
 
-    def predict_next_angle(self, meas_rotation_speed, dt):
+    def predict_next_angle(self, meas_ang_velo, dt):
 
         # - calculate the angle prediction
         # - the gyroscope measures the angle speed, but it doesn't 
         #   measure the angle
         
-        actual_rotation_speed = meas_rotation_speed - self.bias
-        self.angle += (actual_rotation_speed * dt)
+        actual_ang_velo = meas_ang_velo - self.bias
+        self.angle += (actual_ang_velo * dt)
 
         # the P matrix is for the doubt
         # p00: total accumulated doubt = new bias uncertainty + new cross uncertainty + angle drift

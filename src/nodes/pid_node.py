@@ -22,8 +22,7 @@ class PIDNode(Node):
             Float32,                    # message type
             '/robot/state/pitch',       # topic name
             self.pitch_callback,        # callback function
-            10 
-            # QoS / queue size (max number of messages to hold in buffer in case the publisher generates data faster than the subscriber can process it)
+            10                          # QoS / queue size (max number of messages to hold in buffer in case the publisher generates data faster than the subscriber can process it)
         )
 
         self.pwm_publisher = self.create_publisher(

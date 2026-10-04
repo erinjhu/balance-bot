@@ -4,6 +4,9 @@
 
 - Kalman filter
     - Added notes to explain the update method
+- State estimator node
+    - Kept Kalman filter in separate file to ensure it is agnostic
+    - Note: subscriber method needs msg input paramter for the data it is receiving
 
 ## Oct 3, 2026
 
