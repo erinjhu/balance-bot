@@ -6,81 +6,71 @@ Self-rising robot with 2 degrees of freedom.
 
 - [MuJoCo](https://mujoco.org/): physics simulation for robot
 - Python
+- ROS2
 
-### Concepts Applied
-- Gyroscope and accelerometer data (in progress)
-- Kalman filter for sensor data (in progress)
-- PWM and PID for motor control (in progress)
+### Architecture
+
+![Node publishers and subscribers](progress_photos/node_planning.png)
+
+Nodes:
+- IMU - gyroscope and accelerometer data 
+- Kalman filter and state estimation 
+- Proportional integral derivative (PID) controller
 - STM32 embedded system (in progress)
+- Camera input using OpenCV (in progress)
 
-## Docs
+### Docs
 
 - [Daily Log](docs/log.md)
 - [Progress Photos](images)
 
-## WSL Setup
+## Setup
 
-```
-python3 -m venv .venv
-```
+### Initial Setup
 
-```
-source .venv/bin/activate
-```
-
-
-## Run the observability (usage) and video nodes
-
-```
-cd src/edge_robot
-```
-```
-python3 observability_node.py
-```
-```
-python3 video_node.py
-```
-
-## Joint movements 
-
-### Setup
-
+Ensure you change your filepath to match your workspace.
 ```
 sudo apt install ros-jazzy-robot-state-publisher -y
-```
-
-```
 sudo apt install ros-jazzy-foxglove-bridge -y
-```
-
-### Run the telemetry node
-
-In each new terminal:
-
-```
-cd src/edge_robot
-```
-
-```
 source /opt/ros/jazzy/setup.bash
+colcon build
+echo "source /opt/ros/jazzy/setup.bash" >> ~/.bashrc
+echo 'alias devbot="cd <filepath-to-the-repo>/balance-bot && source install/setup.bash"' >> ~/.bashrc
+source ~/.bashrc
+colcon build --symlink-install
+chmod +x record_topics.sh
 ```
 
-Terminal 1 (WSL):
+### Each Session
+
+#### Every time you open a new terminal
 
 ```
-ros2 run foxglove_bridge foxglove_bridge
+devbot
 ```
 
-Terminal 2 (WSL):
+#### Every time you add new files 
+
+Because of the --symlink-install flag from the initial setup, you don't need to run `colcon build` every time you modify existing files.
 
 ```
-ros2 run robot_state_publisher robot_state_publisher robot.urdf
+colcon build
 ```
 
-Terminal 3 (WSL):
+#### Running nodes
+
+Terminal 1:
 
 ```
-python3 telemetry_node.py
+ros2 launch edge_robot bringup.launch.py
+```
+
+Terminal 2:
+
+This script will record the data published by each node into log files. 
+
+```
+./record_topics.sh
 ```
 
 ### Foxglove Visualization
@@ -98,31 +88,3 @@ Panels:
   - Frame: base_link
   - Topics: /robot_description 
 - **CPU and memory usage:** Add Panel > Raw Messages > /system_metrics.data
-
-
-## Testing
-
-Terminal 1:
-```
-python3 pid_node.py
-```
-
-Terminal 2:
-```
-python3 mock_imu_node.py
-```
-
-Terminal 3:
-```
-python3 state_estimator_node.py
-```
-
-Terminal 3:
-```
-ros2 topic echo /motor/pwm
-```
-
-Terminal 4:
-```
-ros2 topic pub -1 /robot/state/pitch std_msgs/msg/Float32 "{data: 5.0}"
-```

@@ -8,7 +8,13 @@
     - Kept Kalman filter in separate file to ensure it is agnostic
     - Note: subscriber method needs msg input paramter for the data it is receiving
 - Mock IMU node to test Kalman filter and state estimator
-- Script to automatically start all the nodes to test them
+- View logs to verify mock IMU
+    - Data published by mock IMU node - angular velocity and acceleration
+    - Data published by state estimator node - pitch
+    - Data published by PID node - PWM values
+- Make ROS2 package and restructure folders
+    - Automatically start nodes
+    - Bash script that will record the data published by each node into files
 
 ## Oct 3, 2026
 
