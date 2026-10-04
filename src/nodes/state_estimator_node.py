@@ -2,7 +2,7 @@ import math
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Float32, Int16MultiArray
-from semsor_msgs import Imu 
+from sensor_msgs.msg import Imu 
 import kalman_filter
 
 class StateEstimatorNode(Node):
@@ -34,7 +34,8 @@ class StateEstimatorNode(Node):
 
         # in the first iteration of the loop, current_time will be a huge numnber
 
-        if dt > 1.0:           
+        if dt > 1.0:      
+            self.get_logger().warn(f"Large time jump detected: {dt}s. Skipping frame.")     
             return   
         
         ang_velo = msg.angular_velocity.y                                                         # rad/s
@@ -48,3 +49,13 @@ class StateEstimatorNode(Node):
         self.pitch_publisher.publish(pitch_msg)
        
         return
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = StateEstimatorNode()
+    rclpy.spin(node)
+    node.destroy_node()
+    rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()

@@ -100,7 +100,7 @@ Panels:
 - **CPU and memory usage:** Add Panel > Raw Messages > /system_metrics.data
 
 
-## Test PID Node
+## Testing
 
 Terminal 1:
 ```
@@ -109,10 +109,20 @@ python3 pid_node.py
 
 Terminal 2:
 ```
-ros2 topic echo /motor/pwm
+python3 mock_imu_node.py
 ```
 
 Terminal 3:
+```
+python3 state_estimator_node.py
+```
+
+Terminal 3:
+```
+ros2 topic echo /motor/pwm
+```
+
+Terminal 4:
 ```
 ros2 topic pub -1 /robot/state/pitch std_msgs/msg/Float32 "{data: 5.0}"
 ```

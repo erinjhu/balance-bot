@@ -7,6 +7,8 @@
 - State estimator node
     - Kept Kalman filter in separate file to ensure it is agnostic
     - Note: subscriber method needs msg input paramter for the data it is receiving
+- Mock IMU node to test Kalman filter and state estimator
+- Script to automatically start all the nodes to test them
 
 ## Oct 3, 2026
 
