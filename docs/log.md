@@ -1,5 +1,6 @@
 ## Next session
 
+for the predict method, why do you calculate the angle instead of just measuring it? is self.angle the measured angle or the future angle calculation? why does the predict method update the p matrix instead of the q or r matrix? why is the p matrix 2d and the other two matrices are 1d
 
 ## Oct 1, 2026
 
