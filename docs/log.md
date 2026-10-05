@@ -6,8 +6,8 @@
     - Data flow so far: Mock IMU (angular speed and acceleration) --> State Estimator / Kalman Filter (current angle) --> PID (PWM output)
 - src\edge_robot\test\test_math.py to test Kalman filter math using Pytest
     - Originally didn't pass. Had to change angle and bias uncertainty because it was originally initialized to 0.0. The logic behind this is that if there is uncertainty, the algorithm will rely more on the sensor (accelerometer) to correct the value. Updated Kalman class so that these values aren't hardcoded.
-- Integration testing
-    - 
+- Automated integration test using Pytest
+    - Start up nodes using launch_ros
 
 ## Oct 4, 2026
 
