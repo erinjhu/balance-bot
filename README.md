@@ -57,7 +57,9 @@ Because of the --symlink-install flag from the initial setup, you don't need to 
 colcon build
 ```
 
-#### Running the robot
+## Usage
+
+### Running the robot
 
 Starting the nodes:
 
@@ -77,7 +79,25 @@ Replaying ROS bag data:
 ros2 bag play robot_test_bag
 ```
 
+### Running tests
+
+Run the test:
+```
+colcon test
+```
+
+View the results:
+```
+colcon test-result --all --verbose
+```
+
+Viewing test logs: log\latest_test
+
 ### Foxglove Visualization
+
+```
+ros2 run foxglove_bridge foxglove_bridge
+```
 
 Setup:
 

@@ -2,7 +2,7 @@
 
 class KalmanFilter():
 
-    def __init__(self):
+    def __init__(self, angle_uncert, bias_uncert):
         self.angle = 0.0        # angle to the vertical
         self.bias = 0.0         # offset of the gyroscope
 
@@ -10,10 +10,10 @@ class KalmanFilter():
         #   - total doubt that affects the variable that you are 
         #     predicting
 
-        self.p00 = 0.0          # angle uncertainty
-        self.p01 = 0.0          # covariance; how bias uncertainty "ruins" the angle
-        self.p10 = 0.0          # covariance; how angle uncertainty "ruins" the bias
-        self.p11 = 0.0          # bias uncertainty
+        self.p00 = angle_uncert         # angle uncertainty
+        self.p01 = 0.0                  # covariance; how bias uncertainty "ruins" the angle
+        self.p10 = 0.0                  # covariance; how angle uncertainty "ruins" the bias
+        self.p11 = bias_uncert          # bias uncertainty
 
         # Q: matrix for process noise (internal system doubt/drift)
         #   - new uncertainty added to the estimates 
