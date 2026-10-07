@@ -7,10 +7,10 @@ from edge_robot.kalman_filter import KalmanFilter
 
 class StateEstimatorNode(Node):
 
-    def __init__(self):
+    def __init__(self, angle_uncert, bias_uncert):
 
         super().__init__('state_estimator_node')
-        self.kf = KalmanFilter()
+        self.kf = KalmanFilter(angle_uncert, bias_uncert)
         self.last_time = 0.0
 
         self.imu_subscriber = self.create_subscription(
@@ -52,7 +52,7 @@ class StateEstimatorNode(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    node = StateEstimatorNode()
+    node = StateEstimatorNode(1.0, 1.0)
     rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()

@@ -1,6 +1,6 @@
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import Float32, Int16MultiArray
+from std_msgs.msg import Float32, Int16MultiArray, Empty
 
 class PIDNode(Node):
 
@@ -15,6 +15,12 @@ class PIDNode(Node):
         self.total_error = 0.0
         self.previous_error = 0.0
 
+        # Anti-windup: cap the accumulated integral so it can't grow
+        # without bound. Without this, total_error keeps rising while
+        # there is any standing error, eventually saturating the motors
+        # and making the controller slow to respond when the error flips.
+        self.integral_limit = 100.0
+
         self.current_pitch = 0.0
         self.target_pitch = 0.0
 
@@ -23,6 +29,16 @@ class PIDNode(Node):
             '/robot/state/pitch',       # topic name
             self.pitch_callback,        # callback function
             10                          # QoS / queue size (max number of messages to hold in buffer in case the publisher generates data faster than the subscriber can process it)
+        )
+
+        # Reset trigger: clears the accumulated integral and derivative
+        # history so the controller can start fresh. Useful on startup,
+        # after a fall, and for deterministic testing.
+        self.reset_subscriber = self.create_subscription(
+            Empty,
+            '/pid/reset',
+            self.reset_callback,
+            10
         )
 
         self.pwm_publisher = self.create_publisher(
@@ -45,6 +61,9 @@ class PIDNode(Node):
         #   the motor until there is no error
 
         self.total_error += error * dt
+        # Clamp the integral to +/- integral_limit (anti-windup).
+        self.total_error = max(-self.integral_limit,
+                               min(self.integral_limit, self.total_error))
         i_output = self.ki * self.total_error
 
         # purpose of Kd:
@@ -63,15 +82,22 @@ class PIDNode(Node):
         # self.get_logger().info("Called pitch_callback")
         self.current_pitch = msg.data # .data is Float32
 
+    def reset_callback(self, msg):
+        # Clear accumulated state so the integral windup from a previous
+        # episode doesn't bias the next one.
+        self.total_error = 0.0
+        self.previous_error = 0.0
+        self.get_logger().info("PID state reset")
+
     def control_loop(self):
 
         pwm_val = self.calculate_output(self.target_pitch, self.current_pitch, 0.01)
 
         # left and right motors
+        self.get_logger().info(f"PWM: {pwm_val}")
         msg = Int16MultiArray()
         msg.data = [int(pwm_val), int(pwm_val)]
         self.pwm_publisher.publish(msg)
-        return 0
 
 def main(args=None):
     rclpy.init(args=args)

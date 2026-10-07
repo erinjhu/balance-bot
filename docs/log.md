@@ -1,5 +1,12 @@
 ## Next session
 
+## Oct 6, 2026
+
+- Integration test failing 
+    - Removed the temporary return 0 at the end of the PID control loop
+    - Forgot to include the angle and bias uncertainty in the init method as input parameters
+    - Forgot the .info in self.get_logger
+
 ## Oct 5, 2026
 
 - Verify current nodes
