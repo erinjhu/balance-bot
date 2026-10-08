@@ -5,6 +5,8 @@ from std_msgs.msg import Float32, Int16MultiArray
 from sensor_msgs.msg import Imu 
 from edge_robot.kalman_filter import KalmanFilter
 
+# Summary: Filter out the noisy 
+
 class StateEstimatorNode(Node):
 
     def __init__(self, angle_uncert, bias_uncert):

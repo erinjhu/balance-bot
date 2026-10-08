@@ -1,5 +1,9 @@
 ## Next session
 
+## Oct 7, 2026
+
+- Test the nodes with ROS 2 and Foxglove
+
 ## Oct 6, 2026
 
 - Integration test failing 
