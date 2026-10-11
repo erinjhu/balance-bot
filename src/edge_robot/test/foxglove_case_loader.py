@@ -21,7 +21,9 @@ from builtin_interfaces.msg import Time
 
 def load_case(input_path):
     """Read a case input file and return (description, samples list)."""
+    # put the json object into data
     data = json.loads(Path(input_path).read_text())
+    # return a tuple: (description, array of test cases)
     return data.get("description", ""), data["samples"]
 
 

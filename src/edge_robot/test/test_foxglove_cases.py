@@ -24,6 +24,14 @@ from sensor_msgs.msg import Imu
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from foxglove_case_loader import load_case, load_expected, sample_to_imu  # noqa: E402
 
+# What happens when you run the file
+#   0. generate_test_description() runs first because of @pytest.mark.launch_test
+#   1. setUpClass() - runs once per class
+#   2. setUp() - runs once per test method
+#   3. test_all_cases() - the actual test
+#   4. tearDown() - runs after every test method
+#   5. tearDownClass() runs at the end
+
 # note: noqa (no quality assurance) tells linters to ignore the linting error
 #   where the import isn't at the top of the file. in this case, the import
 #   comes after changing the system path
@@ -43,7 +51,7 @@ CASE_TIME_STRIDE = 100.0
 
 def discover_cases():
     """Return sorted (name, input_path, expected_path) for each case folder."""
-    cases = []
+    cases = []  # list
     for folder in sorted(CASES_DIR.iterdir()):
         if not folder.is_dir() or folder.name == 'template':
             continue
@@ -154,21 +162,40 @@ class TestFoxgloveCases(unittest.TestCase):
     def _spin_for(self, seconds):
         end = time.monotonic() + seconds
         while time.monotonic() < end:
+            # - if you used spin instead of spin_once, it would just loop the node
+            #   checking the event queue infinitely, and it wouldn't be able to check
+            #   the condition of the while loop
+            # - if there are no events in the event queue, keep checking for 0.005s
+            # - if there is an event in the event queue, run the callback method and
+            #   then it will reach the end of the while loop, so you can check the 
+            #   condition again
             rclpy.spin_once(self.node, timeout_sec=0.005)
 
     def _run_case(self, samples, time_offset):
         """Replay samples in (roughly) real time and return (pitch, pwm)."""
         # Fresh PID integral/derivative state for this case.
+        # - run this loop 10 times to guarantee that it runs the initial reset
+        #   command
+        #       - ROS 2 nodes take time to set up the publishers and 
+        #         subscribers
+        #       - if only one reset command was published, it might not get 
+        #         received if the subscriber wasn't set up yet
         for _ in range(10):
             self.reset_pub.publish(Empty())
             self._spin_for(0.02)
         self.pwm = None
         self.pitch = None
 
+        # default value is going to be 0.0 if the JSON is missing the 't' key
         prev_t = samples[0].get('t', 0.0)
+        # go through the rest of the test cases in the JSON
         for sample in samples:
             t = sample.get('t', 0.0)
+            # make a copy of samples from src\edge_robot\foxglove_imu_TCs\template
+            # but replace all the 't' values with shifted values. the offset will
+            # be determined by the index number of the test case 
             shifted = dict(sample, t=t + time_offset)
+            # sample_to_imu converts the JSON into an IMU message
             self.imu_pub.publish(sample_to_imu(shifted))
             # Wait the real gap between samples so the PID timer keeps up.
             self._spin_for(max(t - prev_t, 0.0))
@@ -180,11 +207,23 @@ class TestFoxgloveCases(unittest.TestCase):
     def test_all_cases(self):
         cases = discover_cases()
         self.assertTrue(cases, f'No test cases found in {CASES_DIR}')
-
+        # enumerate adds an index number to each item in the `cases` list
         for index, (name, input_path, expected_path) in enumerate(cases):
+            # subTest makes it treat each loop iteration as its own test
             with self.subTest(case=name):
+                # - load_case returns a tuple
+                #   - see src\edge_robot\test\test_foxglove_cases.py for load_case definition
+                # - what's a tuple?
+                #   - list that can't be modified later
+                #   - can have mixed data types
+                # - store the description in _ 
+                #   - in python, when a variable is named "_", it is used 
+                #     to store a return value that you don't use 
                 _, samples = load_case(input_path)
+                # - load_expected puts the whole file for expected results into a 
+                #   dictionary.
                 expected = load_expected(expected_path)
+                # empty lists in Python evaluate to false
                 self.assertTrue(samples, f'{name}: no samples')
 
                 pitch, pwm = self._run_case(

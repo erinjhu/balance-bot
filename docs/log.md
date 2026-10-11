@@ -2,6 +2,10 @@
 
 - Is there a way to save configurations in Foxglove?
 
+## Oct 11, 2026
+
+- Added notes for [test cases](src\edge_robot\test\test_foxglove_cases.py) and [test loader](src\edge_robot\test\foxglove_case_loader.py)
+
 ## Oct 10, 2026
 
 - Added test cases for an array of various IMU inputs for angular velocity and linear acceleration
