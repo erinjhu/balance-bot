@@ -1,0 +1,4 @@
+{
+  "pitch": { "sign": "zero", "min": -0.05, "max": 0.05 },
+  "pwm":   { "sign": "zero", "min": -5,    "max": 5 }
+}

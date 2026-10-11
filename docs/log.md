@@ -1,5 +1,31 @@
 ## Next session
 
+- Is there a way to save configurations in Foxglove?
+
+## Oct 10, 2026
+
+- Added test cases for an array of various IMU inputs for angular velocity and linear acceleration
+    - Formatted as JSON
+    - Add expected results for pitch and PWM
+- Added Python [script](src\edge_robot\test\foxglove_case_loader.py) to load test cases from JSON files into ROS 2 IMU sensor messages 
+- Added Python [script](src\edge_robot\test\test_foxglove_cases.py) to run test case
+- Quaternion
+    - [3Blue1Brown video](https://youtu.be/zjMuIxRvygQ?si=fsq5szVihofUdIHb) and [tutorial](https://eater.net/quaternions/video/intro)
+    - (x, y, z, w)
+    - x, y, z: the vector for the axis to rotate on
+        - x = sin(theta/2)
+        - y = sin(theta/2)
+        - z = sin(theta/2)
+    - w: cos(theta/2) where theta is the angle for how much to rotate along the axis
+        - if w = 1, then 1 = cos(theta/2) and theta = 0
+- Other methods of rotation
+    - Rotation matrix
+        - 3 x 3
+        - Each column is a vector
+    - Euler angles 
+        - Rotate on 3 axes
+        - Risk of gimbal lock
+
 ## Oct 7, 2026
 
 - Test the nodes with ROS 2 and Foxglove

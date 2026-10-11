@@ -1,9 +1,50 @@
 {
-  "header": {
-    "stamp": { "sec": 0, "nanosec": 0 },
-    "frame_id": "imu_link"
-  },
-  "orientation": { "x": 0.0, "y": 0.0, "z": 0.0, "w": 1.0 },
-  "angular_velocity": { "x": 0.0, "y": 0.0, "z": 0.0 },
-  "linear_acceleration": { "x": 0.0, "y": 0.0, "z": 9.81 }
+  "description": "One line describing what this scenario represents.",
+  "samples": [
+    {
+      "title": "stationary_upright",
+      "expected_pitch": 0,
+      "expected_pwm": 0,
+      "t": 0.0,
+      "header": { "frame_id": "imu_link" },
+      "angular_velocity": { "x": 0.0, "y": 0.0, "z": 0.0 },
+      "linear_acceleration": { "x": 0.0, "y": 0.0, "z": 9.81 }
+    },
+    {
+      "title": "still_tilt_10_deg_fwd",
+      "expected_pitch": 10,
+      "expected_pwm": "positive",
+      "t": 1.00,
+      "header": { "frame_id": "imu_link" },
+      "angular_velocity": { "x": 0.0, "y": 0.0, "z": 0.0 },
+      "linear_acceleration": { "x": 1.70, "y": 0, "z": 9.66 }
+    },
+    {
+      "title": "still_tilt_10_deg_bwd",
+      "expected_pitch": -10,
+      "expected_pwm": "negative",
+      "t": 2.00,
+      "header": { "frame_id": "imu_link" },
+      "angular_velocity": { "x": 0.0, "y": 0.0, "z": 0.0 },
+      "linear_acceleration": { "x": -1.70, "y": 0, "z": 9.66 }
+    },
+    {
+      "title": "falling_fwd",
+      "expected_pitch": "massive positive",
+      "expected_pwm": "massive positive",
+      "t": 3.00,
+      "header": { "frame_id": "imu_link" },
+      "angular_velocity": { "x": 0.0, "y": 2.5, "z": 0.0 },
+      "linear_acceleration": { "x": 1.70, "y": 9.66, "z": 0 }
+    },
+    {
+      "title": "falling_bwd",
+      "expected_pitch": "massive negative",
+      "expected_pwm": "massive negative",
+      "t": 4.00,
+      "header": { "frame_id": "imu_link" },
+      "angular_velocity": { "x": 0.0, "y": -2.5, "z": 0.0 },
+      "linear_acceleration": { "x": -1.70, "y": 9.66, "z": 0 }
+    }
+  ]
 }
