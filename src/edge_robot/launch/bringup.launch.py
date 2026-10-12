@@ -14,11 +14,11 @@ def generate_launch_description():
             executable='pid',
             name='pid_node',
             output='screen'
-        ),
-        Node(
-            package='edge_robot',
-            executable='mock_imu',
-            name='mock_imu_node',
-            output='screen'
         )
+        # Node(
+        #     package='edge_robot',
+        #     executable='mock_imu',
+        #     name='mock_imu_node',
+        #     output='screen'
+        # )
     ])

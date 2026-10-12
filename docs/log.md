@@ -5,6 +5,11 @@
 ## Oct 11, 2026
 
 - Added notes for [test cases](src\edge_robot\test\test_foxglove_cases.py) and [test loader](src\edge_robot\test\foxglove_case_loader.py)
+- Failing: AssertionError: ['pitch=-1.5845216512680054 below min -0.05'] is not false : test_1: pitch=-1.5845216512680054 below min -0.05
+- Tried using ROS bags to view the IMU data, but tried recording it and there is no data coming out
+    - Try using ros2 topic echo to see if it's the topic that's not working. The topic is working.
+    - The IMU values just stayed at the same number for the entire time. Tried turning off the mock IMU node so that it will use the mock IMU data from the test file instead.
+    - Tried making the test print the corresponding inputs for each test case so it's easier to debug.
 
 ## Oct 10, 2026
 

@@ -96,7 +96,7 @@ ros2 bag record --topics /imu/data_raw /robot/state/pitch /motor/pwm
 Replaying ROS bag data:
 
 ```
-ros2 bag play robot_test_bag
+ros2 bag play log/<name of rosbag folder>
 ```
 
 ### Running tests

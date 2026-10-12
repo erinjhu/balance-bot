@@ -7,6 +7,7 @@ Every folder under foxglove_imu_TCs/ (except "template") is one test case:
 To add a test, drop in a new folder with those two files. No Python needed.
 """
 
+import json
 import sys
 import time
 import unittest
@@ -122,15 +123,21 @@ class TestFoxgloveCases(unittest.TestCase):
             Float32, '/robot/state/pitch', self._on_pitch, 10)
         self.pwm = None
         self.pitch = None
+        # Every value received during the current case, kept only so a
+        # failure message can show how the outputs evolved.
+        self.pwm_history = []
+        self.pitch_history = []
 
     def tearDown(self):
         self.node.destroy_node()
 
     def _on_pwm(self, msg):
         self.pwm = msg.data[0]
+        self.pwm_history.append(msg.data[0])
 
     def _on_pitch(self, msg):
         self.pitch = msg.data
+        self.pitch_history.append(msg.data)
 
     # time.monotonic() 
     #   - time.time() uses the system clock, which can jump forwards or backwards
@@ -185,6 +192,8 @@ class TestFoxgloveCases(unittest.TestCase):
             self._spin_for(0.02)
         self.pwm = None
         self.pitch = None
+        self.pwm_history = []
+        self.pitch_history = []
 
         # default value is going to be 0.0 if the JSON is missing the 't' key
         prev_t = samples[0].get('t', 0.0)
@@ -229,10 +238,36 @@ class TestFoxgloveCases(unittest.TestCase):
                 pitch, pwm = self._run_case(
                     samples, time_offset=CASE_TIME_STRIDE * (index + 1))
 
-                self.assertIsNotNone(pitch, f'{name}: no pitch received')
-                self.assertIsNotNone(pwm, f'{name}: no pwm received')
+                # Shown on any failure below so you can see what went in
+                # and what came out without re-running with prints.
+                context = self._describe(
+                    name, input_path, samples, expected, pitch, pwm)
+
+                self.assertIsNotNone(
+                    pitch, f'{name}: no pitch received\n{context}')
+                self.assertIsNotNone(
+                    pwm, f'{name}: no pwm received\n{context}')
 
                 failures = []
                 failures += check_value('pitch', pitch, expected['pitch'])
                 failures += check_value('pwm', pwm, expected['pwm'])
-                self.assertFalse(failures, f'{name}: ' + '; '.join(failures))
+                self.assertFalse(
+                    failures,
+                    f'{name}: ' + '; '.join(failures) + f'\n{context}')
+
+    def _describe(self, name, input_path, samples, expected, pitch, pwm):
+        """Build a debug summary of the inputs, expectations and outputs."""
+        last_n = 5
+        return '\n'.join([
+            f'--- debug info for case "{name}" ---',
+            f'input file : {input_path}',
+            f'samples    : {len(samples)} '
+            f'(t={samples[0].get("t", 0.0)} .. {samples[-1].get("t", 0.0)})',
+            f'first      : {json.dumps(samples[0])}',
+            f'last       : {json.dumps(samples[-1])}',
+            f'expected   : {json.dumps(expected)}',
+            f'final pitch: {pitch}  (received {len(self.pitch_history)}, '
+            f'last {last_n}: {self.pitch_history[-last_n:]})',
+            f'final pwm  : {pwm}  (received {len(self.pwm_history)}, '
+            f'last {last_n}: {self.pwm_history[-last_n:]})',
+        ])
