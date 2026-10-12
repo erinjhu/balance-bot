@@ -5,7 +5,7 @@ Self-rising robot with 2 degrees of freedom.
 ### Tech Stack
 
 - [MuJoCo](https://mujoco.org/): physics simulation for robot
-- Python
+- Python and Pytest
 - ROS 2
 
 ### Architecture

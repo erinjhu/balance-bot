@@ -2,6 +2,12 @@
 
 - Is there a way to save configurations in Foxglove?
 
+## Oct 12, 2026
+
+- Debugged the state estimator node
+    - Verify that it can load the test cases from the JSON
+    - 
+
 ## Oct 11, 2026
 
 - Added notes for [test cases](src\edge_robot\test\test_foxglove_cases.py) and [test loader](src\edge_robot\test\foxglove_case_loader.py)

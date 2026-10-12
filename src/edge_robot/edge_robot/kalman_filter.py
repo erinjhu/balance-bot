@@ -10,7 +10,7 @@ class KalmanFilter():
         #   - total doubt that affects the variable that you are 
         #     predicting
 
-        self.p00 = angle_uncert         # angle uncertainty
+        self.p00 = angle_uncert         # angle uncertainty (the variable that is being predicted)
         self.p01 = 0.0                  # covariance; how bias uncertainty "ruins" the angle
         self.p10 = 0.0                  # covariance; how angle uncertainty "ruins" the bias
         self.p11 = bias_uncert          # bias uncertainty
@@ -48,14 +48,18 @@ class KalmanFilter():
         actual_ang_velo = meas_ang_velo - self.bias
         self.angle += (actual_ang_velo * dt)
 
-        # the P matrix is for the doubt
-        # p00: total accumulated doubt = new bias uncertainty + new cross uncertainty + angle drift
-        # p11: new bias uncertainty = bias uncertainty rate of change * dt + old bias uncertainty
-        # p01: new cross uncertainty = old cross uncertainty - current bias uncertainty * dt
+        # the P matrix is for the doubt, which grows larger as you make more predictions
+
+        # the units for variance are the units of that variable but squared since variance is the standard deviation squared.
+        # bias is measured in deg/s because the gyroscope sensor measures angular velocity in deg/s
+
+        # p00 - angle variance [deg^2]: total accumulated doubt = new bias uncertainty + new cross uncertainty + angle drift
+        # p11 - bias variance [deg^2 / s^2]: new bias uncertainty = bias uncertainty rate of change * dt + old bias uncertainty
+        # p01 - angle-bias covariance [deg^2 / s]: new cross uncertainty = old cross uncertainty - current bias uncertainty * dt
         #   - subtract to compensate for the bias. originally add the bias, but if the bias
         #     is too high, the prediction for the angle will be too low (the bias gets 
         #     subtracted from the angle). 
-        # p10: same as p01
+        # p10 - bias-angle covariance [deg^2 / s]: same as p01
 
         self.p00 += dt * (dt * self.p11 - self.p01 - self.p10 + self.q_angle) 
         self.p01 -= dt * self.p11          
@@ -93,6 +97,12 @@ class KalmanFilter():
         self.bias += (k1 * error)
         p00_temp = self.p00
         p01_temp = self.p01
+
+        # doubt decreases because you are getting a new reference
+        # measurement from the accelerometer. the predicted angle
+        # is now supported by the measurement from two different
+        # sensors.
+
         self.p00 -= k0 * p00_temp
         self.p01 -= k0 * p01_temp
         self.p10 -= k1 * p00_temp
