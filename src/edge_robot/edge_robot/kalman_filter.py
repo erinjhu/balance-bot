@@ -66,7 +66,6 @@ class KalmanFilter():
         self.p10 -= dt * self.p11           
         self.p11 += self.q_bias * dt        
 
-        return 0
 
     def update(self, accel_angle):
 

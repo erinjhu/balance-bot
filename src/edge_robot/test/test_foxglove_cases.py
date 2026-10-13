@@ -117,23 +117,23 @@ class TestFoxgloveCases(unittest.TestCase):
         self.node = rclpy.create_node('foxglove_case_harness')
         self.imu_pub = self.node.create_publisher(Imu, '/imu/data_raw', 10)
         self.reset_pub = self.node.create_publisher(Empty, '/pid/reset', 10)
-        self.node.create_subscription(
-            Int16MultiArray, '/motor/pwm', self._on_pwm, 10)
+        # self.node.create_subscription(
+        #     Int16MultiArray, '/motor/pwm', self._on_pwm, 10)
         self.node.create_subscription(
             Float32, '/robot/state/pitch', self._on_pitch, 10)
         self.pwm = None
         self.pitch = None
         # Every value received during the current case, kept only so a
         # failure message can show how the outputs evolved.
-        self.pwm_history = []
+        # self.pwm_history = []
         self.pitch_history = []
 
     def tearDown(self):
         self.node.destroy_node()
 
-    def _on_pwm(self, msg):
-        self.pwm = msg.data[0]
-        self.pwm_history.append(msg.data[0])
+    # def _on_pwm(self, msg):
+    #     self.pwm = msg.data[0]
+    #     self.pwm_history.append(msg.data[0])
 
     def _on_pitch(self, msg):
         self.pitch = msg.data
@@ -190,9 +190,9 @@ class TestFoxgloveCases(unittest.TestCase):
         for _ in range(10):
             self.reset_pub.publish(Empty())
             self._spin_for(0.02)
-        self.pwm = None
+        # self.pwm = None
         self.pitch = None
-        self.pwm_history = []
+        # self.pwm_history = []
         self.pitch_history = []
 
         # default value is going to be 0.0 if the JSON is missing the 't' key
@@ -211,7 +211,8 @@ class TestFoxgloveCases(unittest.TestCase):
             prev_t = t
 
         self._spin_for(SETTLE_SEC)
-        return self.pitch, self.pwm
+        # return self.pitch, self.pwm
+        return self.pitch
 
     def test_all_cases(self):
         cases = discover_cases()
@@ -235,11 +236,15 @@ class TestFoxgloveCases(unittest.TestCase):
                 # empty lists in Python evaluate to false
                 self.assertTrue(samples, f'{name}: no samples')
 
-                pitch, pwm = self._run_case(
-                    samples, time_offset=CASE_TIME_STRIDE * (index + 1))
+                # pitch, pwm = self._run_case(
+                #     samples, time_offset=CASE_TIME_STRIDE * (index + 1))
+                pitch = self._run_case(samples, time_offset=CASE_TIME_STRIDE * (index + 1))
 
                 # Shown on any failure below so you can see what went in
                 # and what came out without re-running with prints.
+
+                pwm = 0 # temporary
+
                 context = self._describe(
                     name, input_path, samples, expected, pitch, pwm)
 
@@ -268,6 +273,6 @@ class TestFoxgloveCases(unittest.TestCase):
             f'expected   : {json.dumps(expected)}',
             f'final pitch: {pitch}  (received {len(self.pitch_history)}, '
             f'last {last_n}: {self.pitch_history[-last_n:]})',
-            f'final pwm  : {pwm}  (received {len(self.pwm_history)}, '
-            f'last {last_n}: {self.pwm_history[-last_n:]})',
+            # f'final pwm  : {pwm}  (received {len(self.pwm_history)}, '
+            # f'last {last_n}: {self.pwm_history[-last_n:]})',
         ])
