@@ -29,6 +29,7 @@ class StateEstimatorNode(Node):
         )
 
     def imu_callback(self, msg):
+        print("imu_callback")
        
         current_time = msg.header.stamp.sec + (msg.header.stamp.nanosec * 1e-9)
         dt = current_time - self.last_time
@@ -38,18 +39,19 @@ class StateEstimatorNode(Node):
 
         if dt > 1.0:      
             self.get_logger().warn(f"Large time jump detected: {dt}s. Skipping frame.")     
-            return   
+            print("return")
+            eturn   
         
         ang_velo = msg.angular_velocity.y                                                         # rad/s
         accel_angle = math.atan2(msg.linear_acceleration.x, msg.linear_acceleration.z)            # arctan
        
         self.kf.predict_next_angle(ang_velo, dt)
         self.kf.update(accel_angle)
-
+        print("kf updated")
         pitch_msg = Float32()
         pitch_msg.data = self.kf.angle
         self.pitch_publisher.publish(pitch_msg)
-       
+        print(f"published pitch: {pitch_msg}")
         return
 
 def main(args=None):

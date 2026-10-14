@@ -36,6 +36,7 @@ class TestHarnessNode(Node):
         self.received_pitch = None
 
     def pitch_callback(self, msg):
+        print("pitch_callback")
         self.received_pitch = msg
         return
 
@@ -64,27 +65,8 @@ def test_data():
     description, samples = load_case(input_path)
     return samples
 
-# def test_load_last_case():
-#     print("test_load_last_case")
-#     input_path = CASES_DIR / "test_1" / "test_1"
-#     description, samples = load_case(input_path)
-#     assert description == "One line describing what this scenario represents."
-#     assert len(samples) == EXPECTED_SAMPLES_COUNT
-#     assert samples[EXPECTED_SAMPLES_COUNT - 1]["title"] == "falling_bwd"
-#     assert samples[EXPECTED_SAMPLES_COUNT - 1]["expected_pitch"] == "massive negative"
-#     assert samples[EXPECTED_SAMPLES_COUNT - 1]["expected_pwm"] == "massive negative"
-#     assert samples[EXPECTED_SAMPLES_COUNT - 1]["angular_velocity"] == { "x": 0.0, "y": -2.5, "z": 0.0 }
-#     assert samples[EXPECTED_SAMPLES_COUNT - 1]["linear_acceleration"] == { "x": -1.70, "y": 9.66, "z": 0 }
-
-# @pytest.mark.parametrize("label, ang_velo, accel, expected_pitch", [
-#     ("stationary_upright", {"x": 0.0, "y": 0.0, "z": 0.0 }, { "x": 1.70, "y": 0, "z": 9.66}, 0),
-#     ("still_tilt_10_deg_fwd", { "x": 0.0, "y": 0.0, "z": 0.0 }, { "x": 1.70, "y": 0, "z": 9.66}, 10),
-#     ("still_tilt_10_deg_bwd", { "x": 0.0, "y": 0.0, "z": 0.0 }, { "x": -1.70, "y": 0, "z": 9.66}, -10),
-#     ("falling_fwd", { "x": 0.0, "y": 2.5, "z": 0.0 }, { "x": 1.70, "y": 9.66, "z": 0 }, "massive_positive"),
-#     ("falling_bwd", { "x": 0.0, "y": 2.5, "z": 0.0 }, { "x": 1.70, "y": 9.66, "z": 0 }, "massive_negative"),
-# ])
-def test_node(test_data, ros_env):
-    print("test_node")
+def test_data_parsing(test_data, ros_env):
+    print("Test data parsing")
     state_estimator_node, test_harness_node, executor = ros_env
     assert test_data[EXPECTED_SAMPLES_COUNT - 1]["title"] == "falling_bwd"
     assert test_data[EXPECTED_SAMPLES_COUNT - 1]["expected_pitch"] == "massive negative"
@@ -92,3 +74,12 @@ def test_node(test_data, ros_env):
     assert test_data[EXPECTED_SAMPLES_COUNT - 1]["angular_velocity"] == { "x": 0.0, "y": -2.5, "z": 0.0 }
     assert test_data[EXPECTED_SAMPLES_COUNT - 1]["linear_acceleration"] == { "x": -1.70, "y": 9.66, "z": 0 }    
     executor.spin_once(timeout_sec=0.1)
+    
+def test_node(test_data, ros_env):
+    print("Test node")
+    state_estimator_node, test_harness_node, executor = ros_env
+    stationary_upright_msg = sample_to_imu(test_data[0])
+    test_harness_node.mock_imu_pub.publish(stationary_upright_msg)
+    executor.spin_once(timeout_sec=1)
+    print(f"received: {test_harness_node.received_pitch}")
+    assert test_harness_node.received_pitch is not None

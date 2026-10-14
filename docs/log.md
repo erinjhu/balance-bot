@@ -2,11 +2,16 @@
 
 - Is there a way to save configurations in Foxglove?
 
+## Oct 13, 2026
+
+- Debugged the state estimator node
+    - The pitch callback in the test harness node wasn't getting called
+    - Decided to make separate tests for the Kalman filter, state estimator node, and PID node
+
 ## Oct 12, 2026
 
 - Debugged the state estimator node
     - Verify that it can load the test cases from the JSON
-    - 
 
 ## Oct 11, 2026
 
