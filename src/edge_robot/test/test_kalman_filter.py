@@ -49,7 +49,7 @@ def test_initial_covariance(kf):
 # ---------------------------------------------------------------------------
 
 ang_velo_values = [
-    0.0,
+    0.5,
     1.0
 ]
 
@@ -63,33 +63,50 @@ next_angle_values = [
     0.5
 ]
 
+bias_values = [
+    0.0,
+    1.0
+]
+
 def test_predict_integrates_angle(kf):
     kf.predict_next_angle(ang_velo_values[1], dt_values[1])
     assert kf.angle == pytest.approx(next_angle_values[1])
 
 
-def test_predict_subtracts_bias(kf):
-    # HINT: set kf.bias to a non-zero value, then predict. The integrated
-    # angle should be reduced compared to the zero-bias case:
-    # effective velocity = meas_ang_velo - bias.
-    assert False  # TODO
+def test_predict_subtracts_bias():
+    kf0 = KalmanFilter(ANGLE_UNCERT, BIAS_UNCERT)
+    kf0.bias = bias_values[0]
+    kf0.predict_next_angle(ang_velo_values[1], dt_values[1])
+    angle_0 = kf0.angle
+    kf1 = KalmanFilter(ANGLE_UNCERT, BIAS_UNCERT)
+    kf1.bias = bias_values[1]
+    kf1.predict_next_angle(ang_velo_values[1], dt_values[1])
+    angle_1 = kf1.angle
+    assert angle_1 < angle_0
 
 
 def test_predict_grows_uncertainty(kf):
-    # HINT: prediction alone adds doubt. Capture p00 before, call predict,
+    prev_p00 = kf.p00
+    kf.predict_next_angle(ang_velo_values[1], dt_values[1])
+    assert kf.p00 > prev_p00
+    # prediction alone adds doubt. Capture p00 before, call predict,
     # assert p00 afterward is strictly larger.
-    assert False  # TODO
 
 
 def test_predict_develops_cross_covariance(kf):
-    # HINT: p01 / p10 start at 0.0 but become non-zero after a predict with
+    kf.predict_next_angle(ang_velo_values[1], dt_values[1])
+    assert kf.p01 != 0
+    assert kf.p10 != 0
+    # p01 / p10 start at 0.0 but become non-zero after a predict with
     # non-zero p11 and dt (the filter derives the correlation itself).
-    assert False  # TODO
 
 
 def test_predict_zero_dt_leaves_angle_unchanged(kf):
-    # HINT: dt == 0 means no time passed, so angle should not move.
-    assert False  # TODO
+    # dt == 0 means no time passed, so angle should not move.
+    prev_angle = kf.angle
+    kf.predict_next_angle(ang_velo_values[0], dt_values[0])
+    new_angle = kf.angle
+    assert prev_angle == new_angle  
 
 
 # ---------------------------------------------------------------------------

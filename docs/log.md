@@ -2,6 +2,14 @@
 
 - Is there a way to save configurations in Foxglove?
 
+## Oct 14, 2026
+
+- Added test to verify that the angle value is lower when there is a bias.
+    - The filter subtracts the bias from the measured value, so the outputted angle should be lower.
+    - Error: was originally reusing the same Kalman filter, which caused the test case to fail. 
+        - meas_velo=01, dt=0.5, bias=0 then predicted angle is 0.5
+        - 2nd time: same meas_velo and dt, but set the bias to 1. predicted angle will be 0.5 + (1 - 1) * 0.5
+
 ## Oct 13, 2026
 
 - Debugged the state estimator node
