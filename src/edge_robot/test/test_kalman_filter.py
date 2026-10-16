@@ -114,22 +114,31 @@ def test_predict_zero_dt_leaves_angle_unchanged(kf):
 # ---------------------------------------------------------------------------
 
 def test_update_reduces_uncertainty(kf):
-    # HINT: a measurement always lowers doubt. Capture p00 before update,
-    # assert it is smaller afterward.
-    assert False  # TODO
+    # A measurement always lowers doubt: p00 should shrink after update.
+    prev_p00 = kf.p00
+    kf.update(0.5)
+    assert kf.p00 < prev_p00
 
 
 def test_update_with_zero_error_leaves_state_unchanged(kf):
-    # HINT: if the measured angle already equals kf.angle, error == 0, so
-    # angle and bias should not move.
-    assert False  # TODO
+    # If the measured angle already equals kf.angle, error == 0, so angle
+    # and bias should not move.
+    prev_angle = kf.angle
+    prev_bias = kf.bias
+    kf.update(kf.angle)
+    assert kf.angle == pytest.approx(prev_angle)
+    assert kf.bias == pytest.approx(prev_bias)
 
 
 def test_update_moves_estimate_toward_measurement(kf):
-    # HINT: predict to some angle, then update with a *larger* measured
-    # angle. The new angle should land strictly between the prediction and
-    # the measurement (correction, never overshoot in one step).
-    assert False  # TODO
+    # Predict to some angle, then update with a larger measured angle. The
+    # corrected angle should land strictly between the prediction and the
+    # measurement (correction, never overshoot in one step).
+    kf.predict_next_angle(ang_velo_values[1], dt_values[1])
+    predicted_angle = kf.angle
+    measured_angle = predicted_angle + 1.0
+    kf.update(measured_angle)
+    assert predicted_angle < kf.angle < measured_angle
 
 
 # ---------------------------------------------------------------------------
@@ -138,7 +147,10 @@ def test_update_moves_estimate_toward_measurement(kf):
 
 @pytest.mark.parametrize("true_angle", [0.0, 0.3, -0.5])
 def test_converges_to_true_angle(kf, true_angle):
-    # HINT: loop many times feeding predict(0 velocity, small dt) + update(true_angle).
-    # After enough iterations kf.angle should approach true_angle.
-    # Use pytest.approx with an abs= tolerance.
-    assert False  # TODO
+    # With zero gyro velocity, each iteration predicts "no change" and then
+    # corrects toward the measured true_angle. After enough iterations the
+    # estimate should settle at true_angle.
+    for _ in range(1000):
+        kf.predict_next_angle(0.0, 0.01)
+        kf.update(true_angle)
+    assert kf.angle == pytest.approx(true_angle, abs=1e-2)

@@ -13,7 +13,10 @@ class StateEstimatorNode(Node):
 
         super().__init__('state_estimator_node')
         self.kf = KalmanFilter(angle_uncert, bias_uncert)
-        self.last_time = 0.0
+        # None until the first IMU frame arrives. We can't compute a dt
+        # without a previous timestamp, so the first frame only establishes
+        # the clock baseline instead of being treated as a huge time jump.
+        self.last_time = None
 
         self.imu_subscriber = self.create_subscription(
             Imu,
@@ -32,15 +35,22 @@ class StateEstimatorNode(Node):
         print("imu_callback")
        
         current_time = msg.header.stamp.sec + (msg.header.stamp.nanosec * 1e-9)
+
+        # First frame: no previous timestamp, so just record the baseline
+        # and wait for the next frame to produce a usable dt.
+        if self.last_time is None:
+            self.last_time = current_time
+            return
+
         dt = current_time - self.last_time
         self.last_time = current_time
 
-        # in the first iteration of the loop, current_time will be a huge numnber
-
-        if dt > 1.0:      
-            self.get_logger().warn(f"Large time jump detected: {dt}s. Skipping frame.")     
+        # A large gap means the clock jumped (e.g. between replayed test
+        # cases); skip rather than integrating over a bogus dt.
+        if dt > 1.0:
+            self.get_logger().warn(f"Large time jump detected: {dt}s. Skipping frame.")
             print("return")
-            eturn   
+            return   
         
         ang_velo = msg.angular_velocity.y                                                         # rad/s
         accel_angle = math.atan2(msg.linear_acceleration.x, msg.linear_acceleration.z)            # arctan

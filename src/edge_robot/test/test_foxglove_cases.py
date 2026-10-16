@@ -190,6 +190,16 @@ class TestFoxgloveCases(unittest.TestCase):
         for _ in range(10):
             self.reset_pub.publish(Empty())
             self._spin_for(0.02)
+
+        # Wait for the estimator's subscription to the IMU topic to be matched
+        # before replaying. The nodes run as separate processes, so discovery
+        # takes a moment; publishing the first sample before the subscription
+        # exists silently drops it (and each sample is only published once).
+        discovery_deadline = time.monotonic() + 5.0
+        while (self.imu_pub.get_subscription_count() < 1
+               and time.monotonic() < discovery_deadline):
+            self._spin_for(0.05)
+
         # self.pwm = None
         self.pitch = None
         # self.pwm_history = []

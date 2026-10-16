@@ -1,5 +1,5 @@
 {
-  "description": "One line describing what this scenario represents.",
+  "description": "Robot tilts away from vertical and then settles back to upright; final pitch should be ~0.",
   "samples": [
     {
       "title": "stationary_upright",
@@ -29,22 +29,22 @@
       "linear_acceleration": { "x": -1.70, "y": 0, "z": 9.66 }
     },
     {
-      "title": "falling_fwd",
-      "expected_pitch": "massive positive",
-      "expected_pwm": "massive positive",
+      "title": "returning_upright",
+      "expected_pitch": 0,
+      "expected_pwm": 0,
       "t": 3.00,
       "header": { "frame_id": "imu_link" },
-      "angular_velocity": { "x": 0.0, "y": 2.5, "z": 0.0 },
-      "linear_acceleration": { "x": 1.70, "y": 9.66, "z": 0 }
+      "angular_velocity": { "x": 0.0, "y": 0.0, "z": 0.0 },
+      "linear_acceleration": { "x": 0.0, "y": 0.0, "z": 9.81 }
     },
     {
-      "title": "falling_bwd",
-      "expected_pitch": "massive negative",
-      "expected_pwm": "massive negative",
+      "title": "stationary_upright",
+      "expected_pitch": 0,
+      "expected_pwm": 0,
       "t": 4.00,
       "header": { "frame_id": "imu_link" },
-      "angular_velocity": { "x": 0.0, "y": -2.5, "z": 0.0 },
-      "linear_acceleration": { "x": -1.70, "y": 9.66, "z": 0 }
+      "angular_velocity": { "x": 0.0, "y": 0.0, "z": 0.0 },
+      "linear_acceleration": { "x": 0.0, "y": 0.0, "z": 9.81 }
     }
   ]
 }

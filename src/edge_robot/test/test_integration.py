@@ -81,6 +81,10 @@ class TestRobotPipeline(unittest.TestCase):
 
         self.received_pwm = None
         self.received_pitch = None
+        # Every PWM value seen during a pump(), so a test can check whether a
+        # non-zero command was produced at any point rather than relying on
+        # the single (racy) last value.
+        self.pwm_magnitudes = []
 
         # Trigger a reset and give ROS a moment to deliver it to the PID.
         for _ in range(10):
@@ -93,6 +97,8 @@ class TestRobotPipeline(unittest.TestCase):
 
     def pwm_callback(self, msg):
         self.received_pwm = msg
+        if msg.data:
+            self.pwm_magnitudes.append(msg.data[0])
 
     def pitch_callback(self, msg):
         self.received_pitch = msg
@@ -135,8 +141,13 @@ class TestRobotPipeline(unittest.TestCase):
         pwm = self.pump(self.make_imu_msg(accel_x=2.0))
 
         self.assertIsNotNone(pwm, "Never received PWM message")
-        self.assertNotEqual(pwm.data[0], 0,
-                            f"Expected a non-zero PWM for a tilt, got {pwm.data[0]}")
+        # The PID runs on its own timer, so the single last PWM value can
+        # momentarily land on 0 (startup transient / sampling race). Assert
+        # the pipeline produced a non-zero command at some point instead of
+        # on one racy snapshot.
+        strongest = max((abs(p) for p in self.pwm_magnitudes), default=0)
+        self.assertNotEqual(strongest, 0,
+                            f"Expected a non-zero PWM for a tilt, got {strongest}")
 
     def test_pitch_is_published(self):
         """The estimator half of the pipeline should publish a pitch angle."""

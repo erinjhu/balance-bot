@@ -2,6 +2,10 @@
 
 - Is there a way to save configurations in Foxglove?
 
+## Oct 15, 2026
+
+- Fix tests
+
 ## Oct 14, 2026
 
 - Added test to verify that the angle value is lower when there is a bias.
